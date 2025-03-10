@@ -32,6 +32,7 @@ def advect_x(grid, x, v, dt):
 
     return grid 
 
+
 def advect_v(grid, E, x, v, dt):
     # First flatten the grid - this is row major so the x values are looped over within the v values
     flat = grid.flatten()
@@ -59,5 +60,29 @@ def advect_v(grid, E, x, v, dt):
 
     return grid
 
-def solve_poisson(grid, x, v, dt):
+
+def solve_poisson(grid1, grid2, x, v, dt):
+
+    # For each x evaluate the integral of f_e and f_i
+
+    rho_e = np.zeros(len(x))
+    rho_i = np.zeros(len(x))
+
+    for i in range(len(x)):
+        rho_e[i] = np.sum(grid1[:, i])  
+        rho_i[i] = np.sum(grid2[:, i])
+
+    dv = v[1] - v[0]
+
+    rho_e = rho_e*dv
+    rho_i = rho_i*dv
+
+    # Solve poissons equation
+    E = np.zeros(len(x))
+
+    dx = x[1] - x[0]
+
+    for i in range(1, len(x)-1):
+        E[i] = E[i] + dx*(rho_e[i] - rho_i[i])
+
     return
