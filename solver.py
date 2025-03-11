@@ -1,3 +1,5 @@
+# TODO: add periodic boundary conditions
+
 import numpy as np
 
 def advect_x(grid, x, v, dt):
