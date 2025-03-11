@@ -28,7 +28,6 @@ t = np.linspace(0, T, nt)
 print(f"dt = {dt}, nt = {nt}")
 
 f_e = np.zeros((nv, nx))
-
 # Uniform neutralising background ions
 f_i = np.ones((nv, nx))
 

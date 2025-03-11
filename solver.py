@@ -1,5 +1,3 @@
-# TODO: add periodic boundary conditions
-
 import numpy as np
 
 def advect_x(grid, x, v, dt):
@@ -10,11 +8,13 @@ def advect_x(grid, x, v, dt):
     # Assuming that nx is even, we split this into two matrices for an upwind scheme
     # Negative velocities
     D_neg = np.diag(np.ones(len(x)), k=0) - np.diag(np.ones(len(x)-1), k=-1)
+    D_neg[0, 0] = 1; D_neg[0, -1] = -1
     v_neg = np.diag(v[:len(v)//2])
     A_neg = np.kron(v_neg, D_neg)
 
     # Positive velocities
     D_pos = np.diag(np.ones(len(x)-1), k=1) - np.diag(np.ones(len(x)), k=0)
+    D_pos[-1, -1] = -1; D_pos[-1, 0] = 1
     v_pos = np.diag(v[len(v)//2:])
     A_pos = np.kron(v_pos, D_pos)
 
@@ -24,6 +24,7 @@ def advect_x(grid, x, v, dt):
     #print(A_neg.shape)
 
     I = np.eye(len(x)*len(v))
+    
 
     #print(I.shape, A.shape, flat.shape)
     dx = x[1] - x[0]
@@ -50,7 +51,18 @@ def advect_v(grid, E, x, v, dt):
             else:
                 A[i*len(x)+j, i*len(x)+j] = E[j]
                 A[i*len(x)+j, i*len(x)+j+1] = -E[j]
-    
+
+        if i == 0:
+            A[i*len(x),:] = 0
+            A[i*len(x),i*len(x)] = -E[0]
+            A[i*len(x),(i+1)*len(x)-1] = E[0]
+
+        if i == len(v)-1:
+            A[i*len(x)+len(x)-1,:] = 0
+            A[i*len(x)+len(x)-1,i*len(x)+len(x)-1] = -E[-1]
+            A[i*len(x)+len(x)-1,i*len(x)] = E[-1]
+
+
     I = np.eye(len(x)*len(v))
 
     dv = v[1] - v[0]
