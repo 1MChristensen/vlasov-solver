@@ -52,3 +52,4 @@ for i in tqdm(range(15)):
 plt.plot(v, grid[:,j], label='final')
 plt.legend()
 plt.show()
+

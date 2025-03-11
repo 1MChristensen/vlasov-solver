@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.fft as fft
 
 def advect_x(grid, x, v, dt):
     
@@ -89,24 +90,19 @@ def solve_poisson(grid1, grid2, x, v, dt):
 
     # For each x evaluate the integral of f_e and f_i
 
-    rho_e = np.zeros(len(x))
-    rho_i = np.zeros(len(x))
+    rho_e = np.trapz(grid1, v, axis=0)
 
-    for i in range(len(x)):
-        rho_e[i] = np.sum(grid1[:, i])  
-        rho_i[i] = np.sum(grid2[:, i])
+    # For uniform ions this should be 1
+    rho_i = np.trapz(grid2, v, axis=0)
 
-    dv = v[1] - v[0]
-
-    rho_e = rho_e*dv
-    rho_i = rho_i*dv
-
-    # Solve poissons equation
-    E = np.zeros(len(x))
+    net_rho = rho_i - rho_e
 
     dx = x[1] - x[0]
 
-    for i in range(1, len(x)-1):
-        E[i] = E[i] + dx*(rho_e[i] - rho_i[i])
+    kx = np.fft.fftfreq(x.size, d=dx) * 2.0 * np.pi
+    kx_inv = np.zeros_like(kx)
+    kx_inv[1:] = 1.0 / kx[1:]
 
-    return
+    E = np.real(fft.ifft(1j * kx_inv * fft.fft(net_rho)))
+
+    return -E 
