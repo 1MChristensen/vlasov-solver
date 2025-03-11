@@ -47,18 +47,30 @@ def advect_v(grid, E, x, v, dt):
         for j in range(len(x)):
             if E[j] > 0:
                 A[i*len(x)+j, i*len(x)+j] = -E[j]
-                A[i*len(x)+j, (i-1)*len(x)+j] = E[j]
+                A[i*len(x)+j, (i+1)*len(x)+j] = E[j]
             else:
                 A[i*len(x)+j, i*len(x)+j] = E[j]
-                A[i*len(x)+j, (i+1)*len(x)+j] = -E[j]
+                A[i*len(x)+j, (i-1)*len(x)+j] = -E[j]
 
     # Periodic boundary conditions
     for j in range(len(x)):
-        A[j,j] = E[j]
-        A[j, len(v)*(len(x) - 1) + j] = -E[j]
+        if E[j] < 0:
+            # Flow across the boundary
+            A[j,j] = E[j]
+            A[j, len(v)*(len(x) - 1) + j] = -E[j]
+        else:
+            # No flow across the boundary
+            A[j,j] = -E[j]
+            A[j, j + len(x)] = E[j]
 
-        A[len(v)*(len(x) - 1) + j, len(v)*(len(x) - 1) + j] = E[j]
-        A[len(v)*(len(x) - 1) + j, j] = -E[j]
+        if E[j] > 0:
+            # Flow across the boundary
+            A[len(v)*(len(x) - 1) + j, len(v)*(len(x) - 1) + j] = -E[j]
+            A[len(v)*(len(x) - 1) + j, j] = E[j]
+        else:
+            # No flow across the boundary
+            A[len(v)*(len(x) - 1) + j, len(v)*(len(x) - 1) + j] = E[j]
+            A[len(v)*(len(x) - 1) + j, len(v)*(len(x) - 2) + j] = -E[j]
 
     #print(A)
     I = np.eye(len(x)*len(v))

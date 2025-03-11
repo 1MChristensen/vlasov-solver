@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import solver
 from tqdm import tqdm 
 
-nx = 50
-nv = 50
+nx = 30
+nv = 30
 
 x = np.linspace(-1, 1, nx)
 v = np.linspace(-1, 1, nv)
@@ -22,31 +22,33 @@ T = 10
 nt = int(round(T / dt))
 
 j = len(v) // 2
-j = -1
-
-#grid = np.where(np.abs(x) < 1.0 / 3.0, 1.0, 0.0)
-#grid = np.tile(grid, (nv, 1))
-#print(grid.shape)
-#plt.plot(x, grid[j], label='initial')
-#
-#for i in tqdm(range(20)):
-#    grid = solver.advect_x(grid, x, v, dt)
-#
-#print(grid.shape)
-#plt.plot(x, grid[j], label='final')
-#plt.legend()
-#plt.show()
+j = 0
 
 grid = np.where(np.abs(x) < 1.0 / 3.0, 1.0, 0.0)
 grid = np.tile(grid, (nv, 1))
 
-E = np.ones(len(x))
-
 plt.plot(x, grid[j], label='initial')
 
-for i in tqdm(range(20)):
-    grid = solver.advect_v(grid, E, x, v, dt)
+for i in tqdm(range(30)):
+    grid = solver.advect_x(grid, x, v, dt)
+
 
 plt.plot(x, grid[j], label='final')
+plt.legend()
+plt.show()
+
+grid = np.where(np.abs(v) < 1.0 / 3.0, 1.0, 0.0)
+grid = np.tile(grid, (nv, 1))
+grid = grid.T
+
+
+E = -np.ones(len(x))
+
+plt.plot(x, grid[:,j], label='initial')
+
+for i in tqdm(range(15)):
+    grid = solver.advect_v(grid, E, x, v, dt)
+
+plt.plot(v, grid[:,j], label='final')
 plt.legend()
 plt.show()
