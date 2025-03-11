@@ -43,26 +43,24 @@ def advect_v(grid, E, x, v, dt):
     # Upwinding scheme for E
     A = np.zeros((len(v)*len(x), len(v)*len(x)))
 
-    for i in range(len(v)):
+    for i in range(1,len(v)-1):
         for j in range(len(x)):
             if E[j] > 0:
                 A[i*len(x)+j, i*len(x)+j] = -E[j]
-                A[i*len(x)+j, i*len(x)+j-1] = E[j]
+                A[i*len(x)+j, (i-1)*len(x)+j] = E[j]
             else:
                 A[i*len(x)+j, i*len(x)+j] = E[j]
-                A[i*len(x)+j, i*len(x)+j+1] = -E[j]
+                A[i*len(x)+j, (i+1)*len(x)+j] = -E[j]
 
-        if i == 0:
-            A[i*len(x),:] = 0
-            A[i*len(x),i*len(x)] = -E[0]
-            A[i*len(x),(i+1)*len(x)-1] = E[0]
+    # Periodic boundary conditions
+    for j in range(len(x)):
+        A[j,j] = E[j]
+        A[j, len(v)*(len(x) - 1) + j] = -E[j]
 
-        if i == len(v)-1:
-            A[i*len(x)+len(x)-1,:] = 0
-            A[i*len(x)+len(x)-1,i*len(x)+len(x)-1] = -E[-1]
-            A[i*len(x)+len(x)-1,i*len(x)] = E[-1]
+        A[len(v)*(len(x) - 1) + j, len(v)*(len(x) - 1) + j] = E[j]
+        A[len(v)*(len(x) - 1) + j, j] = -E[j]
 
-
+    #print(A)
     I = np.eye(len(x)*len(v))
 
     dv = v[1] - v[0]
