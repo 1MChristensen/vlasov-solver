@@ -99,7 +99,7 @@ def solve_poisson(grid1, grid2, x, v, dt):
 
     dx = x[1] - x[0]
 
-    kx = np.fft.fftfreq(x.size, d=dx) * 2.0 * np.pi
+    kx = np.fft.fftfreq(x.size, d=dx) * 2 * np.pi
     kx_inv = np.zeros_like(kx)
     kx_inv[1:] = 1.0 / kx[1:]
 
