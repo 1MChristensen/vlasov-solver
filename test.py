@@ -29,7 +29,7 @@ grid = np.tile(grid, (nv, 1))
 
 plt.plot(x, grid[j], label='initial')
 
-for i in tqdm(range(30)):
+for i in tqdm(range(15)):
     grid = solver.advect_x(grid, x, v, dt)
 
 

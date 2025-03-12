@@ -89,7 +89,6 @@ def advect_v(grid, E, x, v, dt):
 def solve_poisson(grid1, grid2, x, v, dt):
 
     # For each x evaluate the integral of f_e and f_i
-
     rho_e = np.trapz(grid1, v, axis=0)
 
     # For uniform ions this should be 1
@@ -99,10 +98,21 @@ def solve_poisson(grid1, grid2, x, v, dt):
 
     dx = x[1] - x[0]
 
-    kx = np.fft.fftfreq(x.size, d=dx) * 2 * np.pi
-    kx_inv = np.zeros_like(kx)
-    kx_inv[1:] = 1.0 / kx[1:]
+    #kx = np.fft.fftfreq(x.size, d=dx)
+    #kx_inv = np.zeros_like(kx)
+    #kx_inv[1:] = 1.0 / kx[1:]
 
-    E = np.real(fft.ifft(1j * kx_inv * fft.fft(net_rho)))
+    #E = np.real(fft.ifft(1j * kx_inv * fft.fft(net_rho)))
+
+    rho_k = fft.fft(net_rho)
+    kx = fft.fftfreq(len(x), d=dx)* 2 * np.pi
+
+    nonzero_k = kx != 0
+    phi_k = np.zeros_like(rho_k, dtype=complex)
+    phi_k[nonzero_k] = -rho_k[nonzero_k] / (kx[nonzero_k]**2)
+
+    E_k = -1j * kx * phi_k
+
+    E = np.fft.ifft(E_k).real
 
     return -E 
