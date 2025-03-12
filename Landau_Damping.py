@@ -56,13 +56,9 @@ for ts in tqdm(t):
     f_e = solver.advect_x(f_e, x, v, dt/2)
 
     E_k = np.fft.fft(E)
-    freqs = np.fft.fftfreq(len(E), d=dx) * 2 * np.pi
     
-    fundamental_idx = np.argmax(np.abs(E_k))
-    fundamental_freq = freqs[fundamental_idx]
-    
-    E_1.append(np.abs(E_k[fundamental_idx]))
-    
+    E_1.append(np.abs(E_k[1]))
+
 plot = True
 
 log_E = np.log(E_1)
