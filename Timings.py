@@ -11,7 +11,7 @@ q = -1
 m = 1
 
 # Number of x grid points
-Nx = [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32]
+Nx = [2,4,6,8,10,12,14]
 
 # Velocity grid
 nv = 32
@@ -52,7 +52,7 @@ for nx in Nx:
             E = solver.solve_poisson(f_e, f_i, x, v, dt/2)
 
             # Thirdly advect in v for dt
-            f_e = solver.advect_v(f_e, q/m * E, x, v, dt/2)
+            f_e = solver.advect_v(f_e, q/m * E, x, v, dt)
 
             # Finally advect in x again for dt/2
             f_e = solver.advect_x(f_e, x, v, dt/2)

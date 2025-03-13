@@ -9,7 +9,7 @@ Lx = 4*np.pi
 ve_max = 4.5
 nx = 32
 nv = 32
-T = 40
+T = 10 
 
 x = np.linspace(0, Lx, nx, endpoint=False)
 v = np.linspace(-ve_max, ve_max, nv, endpoint=False)
@@ -26,7 +26,6 @@ def initial(x,v):
 
 E_max = 0.020887900662348195
 dt = min(dx/ve_max, dv/E_max)
-dt = dx/ve_max
 nt = int(round(T / dt))
 t = np.linspace(0, T, nt)
 
@@ -36,8 +35,6 @@ f_e = initial(x[None,:], v[:,None])
 
 # Uniform neutralising background ions
 f_i = np.ones((nv, nx))/ np.trapz(np.ones((nv, nx)), v, axis=0)
-
-E = np.ones(len(x))
 
 E_1 = []
 
@@ -53,9 +50,8 @@ if plot:
     plt.show()
 
 
-
 # Loop over all time steps
-for ts in tqdm(t):
+for ts in t:
     # First advect in x for dt/2
     f_e = solver.advect_x(f_e, x, v, dt/2)
 
@@ -63,14 +59,18 @@ for ts in tqdm(t):
     E = solver.solve_poisson(f_e, f_i, x, v, dt/2)
 
     # Thirdly advect in v for dt
-    f_e = solver.advect_v(f_e, q/m * E, x, v, dt/2)
+    f_e = solver.advect_v(f_e, q/m * E, x, v, dt)
 
     # Finally advect in x again for dt/2
     f_e = solver.advect_x(f_e, x, v, dt/2)
 
     E_k = np.fft.fft(E)
     
-    E_1.append(np.abs(E_k[1]))
+    E_1.append(np.abs(E_k[1])/nx/4)
+
+    #energy_x = np.trapz(f_e, v, axis=0)
+    #energy = np.trapz(energy_x, x)
+    #print(energy)
 
 if plot:
     X, V = np.meshgrid(x, v)
@@ -86,7 +86,6 @@ plot = True
 
 log_E = np.log(E_1)
 x_peaks = find_peaks(log_E)[0]
-print(x_peaks)
 
 if plot:
     plt.plot(t, E_1)

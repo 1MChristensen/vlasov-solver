@@ -2,9 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import solver
 from tqdm import tqdm 
+np.set_printoptions(threshold=np.inf)
 
-nx = 50
-nv = 50
+nx = 40
+nv = 40
 
 x = np.linspace(-1, 1, nx, endpoint=False)
 v = np.linspace(-1, 1, nv, endpoint=False)
@@ -18,6 +19,7 @@ E_max = 1
 dx = x[1] - x[0]
 
 dt = min(dx/v_max, dv/E_max)
+dt = 1e-3
 T = 10
 nt = int(round(T / dt))
 
@@ -27,11 +29,11 @@ j = 0
 grid = np.where(np.abs(x) < 1.0 / 3.0, 1.0, 0.0)
 grid = np.tile(grid, (nv, 1))
 
-plot = False
+plot = True 
 if plot:
     plt.plot(x, grid[j], label='initial')
 
-for i in tqdm(range(15)):
+for i in tqdm(range(1)):
     grid = solver.advect_x(grid, x, v, dt)
 
 if plot:
@@ -46,24 +48,24 @@ grid = grid.T
 
 E = np.ones(len(x))
 
-plot = False 
+plot = False
 if plot:
-    plt.plot(v, grid[:,j], label='initial')
+    plt.plot(v, grid.T[j], label='initial')
 
-for i in tqdm(range(1)):
-    grid = solver.advect_v(grid, E, x, v, dt)
+for i in tqdm(range(20)):
+    grid = solver.advect_v(grid, -E, x, v, dt)
 
 if plot:
-    plt.plot(v, grid[:,j], label='final')
+    plt.plot(v, grid.T[j], label='final')
     plt.legend()
     plt.show()
 
 
-grid1 = np.cos(2*np.pi*x)/(v[-1]-v[0])
+grid1 = 0.2*np.cos(2*np.pi*x)/(v[-1]-v[0])
 grid1 = np.tile(grid1, (nv, 1))
 grid2 = np.ones_like(grid1)/np.trapz(np.ones_like(grid1), v, axis=0)
 
-plot = True
+plot = False
 if plot:
     plt.plot(x, grid1[j]*(v[-1]-v[0]), label='initial')
 
