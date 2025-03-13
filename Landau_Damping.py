@@ -9,10 +9,10 @@ Lx = 4*np.pi
 ve_max = 4.5
 nx = 32
 nv = 32
-T = 10
+T = 40
 
-x = np.linspace(0, Lx, nx)
-v = np.linspace(-ve_max, ve_max, nv)
+x = np.linspace(0, Lx, nx, endpoint=False)
+v = np.linspace(-ve_max, ve_max, nv, endpoint=False)
 
 dx = x[1] - x[0]
 dv = v[1] - v[0]
@@ -41,14 +41,16 @@ E = np.ones(len(x))
 
 E_1 = []
 
-X, V = np.meshgrid(x, v)
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot_surface(X, V, f_e, cmap='viridis')
-ax.set_xlabel('x')
-ax.set_ylabel('v')
-ax.set_zlabel('f_e')
-plt.show()
+plot = False
+if plot:
+    X, V = np.meshgrid(x, v)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(X, V, f_e, cmap='viridis')
+    ax.set_xlabel('x')
+    ax.set_ylabel('v')
+    ax.set_zlabel('f_e')
+    plt.show()
 
 
 
@@ -70,15 +72,15 @@ for ts in tqdm(t):
     
     E_1.append(np.abs(E_k[1]))
 
-
-X, V = np.meshgrid(x, v)
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot_surface(X, V, f_e, cmap='viridis')
-ax.set_xlabel('x')
-ax.set_ylabel('v')
-ax.set_zlabel('f_e')
-plt.show()
+if plot:
+    X, V = np.meshgrid(x, v)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(X, V, f_e, cmap='viridis')
+    ax.set_xlabel('x')
+    ax.set_ylabel('v')
+    ax.set_zlabel('f_e')
+    plt.show()
 
 plot = True
 
@@ -89,6 +91,8 @@ print(x_peaks)
 if plot:
     plt.plot(t, E_1)
     plt.plot(t[x_peaks], np.exp(log_E[x_peaks]), "x")
+    plt.xlabel('Time')
+    plt.ylabel('$E_1$')
     plt.yscale('log')
     plt.show()
 

@@ -55,10 +55,10 @@ def advect_v(grid, E, x, v, dt):
 
     # Periodic boundary conditions
     for j in range(len(x)):
-        if E[j] < 0:
+        if E[j] <= 0:
             # Flow across the boundary
             A[j,j] = E[j]
-            A[j, len(v)*(len(x) - 1) + j] = -E[j]
+            A[j, len(x)*(len(v) - 1) + j] = -E[j]
         else:
             # No flow across the boundary
             A[j,j] = -E[j]
@@ -66,12 +66,12 @@ def advect_v(grid, E, x, v, dt):
 
         if E[j] > 0:
             # Flow across the boundary
-            A[len(v)*(len(x) - 1) + j, len(v)*(len(x) - 1) + j] = -E[j]
-            A[len(v)*(len(x) - 1) + j, j] = E[j]
+            A[len(x)*(len(v) - 1) + j, len(x)*(len(v) - 1) + j] = -E[j]
+            A[len(x)*(len(v) - 1) + j, j] = E[j]
         else:
             # No flow across the boundary
-            A[len(v)*(len(x) - 1) + j, len(v)*(len(x) - 1) + j] = E[j]
-            A[len(v)*(len(x) - 1) + j, len(v)*(len(x) - 2) + j] = -E[j]
+            A[len(x)*(len(v) - 1) + j, len(x)*(len(v) - 1) + j] = E[j]
+            A[len(x)*(len(v) - 1) + j, len(x)*(len(v) - 2) + j] = -E[j]
 
     #print(A)
     I = np.eye(len(x)*len(v))
@@ -98,14 +98,8 @@ def solve_poisson(grid1, grid2, x, v, dt):
 
     dx = x[1] - x[0]
 
-    #kx = np.fft.fftfreq(x.size, d=dx)
-    #kx_inv = np.zeros_like(kx)
-    #kx_inv[1:] = 1.0 / kx[1:]
-
-    #E = np.real(fft.ifft(1j * kx_inv * fft.fft(net_rho)))
-
     rho_k = fft.fft(net_rho)
-    kx = fft.fftfreq(len(x), d=dx)* 2 * np.pi
+    kx = fft.fftfreq(len(x), d=dx) #* 2 * np.pi
 
     nonzero_k = kx != 0
     phi_k = np.zeros_like(rho_k, dtype=complex)
